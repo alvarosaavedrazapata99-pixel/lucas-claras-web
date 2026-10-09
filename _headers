@@ -1,0 +1,30 @@
+# Encabezados de seguridad (Netlify y Cloudflare Pages leen este archivo; GitHub Pages lo ignora).
+# La landing y la app tienen políticas de contenido (CSP) distintas: cada una va en su ruta, para no sumarse.
+
+# Para todo el sitio
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()
+  Cross-Origin-Opener-Policy: same-origin
+
+# Landing y privacidad: solo scripts propios y tipografías de Google Fonts.
+/
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests
+/index.html
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests
+/privacidad.html
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests
+
+# App (/app/): todo propio, funciona sin internet; nada sale a otros sitios.
+/app/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
+  Referrer-Policy: no-referrer
+/app/sw.js
+  Cache-Control: no-cache
+/app/index.html
+  Cache-Control: no-cache
+/app/assets/*
+  Cache-Control: public, max-age=31536000, immutable

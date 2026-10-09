@@ -17,6 +17,9 @@
   --font: "Archivo", "Arial Narrow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --gutter: clamp(20px, 5vw, 40px);
+  /* Movimiento (criterio de Emil Kowalski): corto, que arranque rápido y frene suave; nunca "rebote". */
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --t-press: 160ms;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -75,7 +78,7 @@ summary:focus-visible {
   max-width: 16ch;
   font-stretch: 75%;
   font-weight: 800;
-  font-size: clamp(2.125rem, 6.5vw, 3.5rem);
+  font-size: clamp(1.875rem, 4.6vw, 2.75rem);
   line-height: 1.02;
   letter-spacing: -.01em;
 }
@@ -93,12 +96,11 @@ summary:focus-visible {
 .lead {
   margin: 0 0 1.75rem;
   max-width: 30ch;
-  font-size: clamp(1.25rem, 3vw, 1.625rem);
+  font-size: clamp(1.125rem, 2.2vw, 1.375rem);
   line-height: 1.35;
   font-weight: 500;
 }
 .body { margin: 0; max-width: 56ch; }
-.body--muted { margin-top: .5rem; color: var(--muted); }
 
 .link {
   color: var(--navy);
@@ -107,14 +109,13 @@ summary:focus-visible {
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;
 }
-.link--plain { overflow-wrap: anywhere; }
 
 /* ---------- Botones ---------- */
 .btn {
   display: inline-flex;
   align-items: center;
   gap: .6rem;
-  min-height: 52px;
+  min-height: 48px;
   padding: 0 1.5rem;
   border-radius: 10px;
   background: var(--green-deep);
@@ -122,11 +123,26 @@ summary:focus-visible {
   font-weight: 700;
   font-size: 1.0625rem;
   text-decoration: none;
+  /* Al presionar el botón se "hunde" un poco: respuesta inmediata al dedo, sin adornos. */
+  transition: transform var(--t-press) var(--ease-out), background-color 200ms ease, box-shadow 200ms ease;
+  -webkit-tap-highlight-color: transparent;
 }
-.btn:hover { background: #1B5C3B; }
+.btn:active { transform: scale(.97); }
+/* El hover solo en dispositivos con mouse: en el celular un hover "pegado" confunde. */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover { background: #1B5C3B; }
+}
+.btn__icon { transition: transform var(--t-press) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover .btn__icon { transform: rotate(-8deg) scale(1.06); }
+}
 .btn--small { min-height: 44px; padding: 0 1rem; font-size: .9375rem; }
-.btn--large { min-height: 60px; padding: 0 2rem; font-size: 1.1875rem; }
+.btn--large { min-height: 54px; padding: 0 1.75rem; font-size: 1.125rem; }
 .btn__icon { flex: none; }
+.link { transition: text-decoration-color 200ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .link:hover { text-decoration-color: var(--green); }
+}
 
 /* ---------- Cabecera ---------- */
 .top {
@@ -163,7 +179,7 @@ summary:focus-visible {
 .brand__name--ondark .brand__name-b { color: var(--green-soft); }
 
 /* ---------- Secciones ---------- */
-.section { padding-block: clamp(56px, 9vw, 112px); }
+.section { padding-block: clamp(40px, 6vw, 76px); }
 .section--paper { background: var(--paper); }
 .section--white { background: var(--white); }
 .section--ink { background: var(--ink); color: var(--white); }
@@ -172,7 +188,7 @@ summary:focus-visible {
 .hero {
   position: relative;
   overflow: hidden;
-  padding-block: clamp(48px, 8vw, 104px);
+  padding-block: clamp(36px, 6vw, 72px);
   background:
     radial-gradient(900px 480px at 85% 20%, rgba(46, 139, 87, .22), transparent 60%),
     linear-gradient(160deg, #13306A 0%, var(--ink) 55%);
@@ -198,7 +214,7 @@ summary:focus-visible {
   margin: 0 0 .25em;
   font-stretch: 70%;
   font-weight: 800;
-  font-size: clamp(3.5rem, 14vw, 6.5rem);
+  font-size: clamp(2.75rem, 10vw, 4.75rem);
   line-height: .9;
   letter-spacing: -.02em;
   color: var(--white);
@@ -224,11 +240,6 @@ summary:focus-visible {
   flex-wrap: wrap;
   align-items: center;
   gap: 18px 28px;
-}
-.hero__note {
-  margin: 18px 0 0;
-  font-size: .9375rem;
-  color: #A9B8D3;
 }
 .hero__visual { margin: 0; }
 
@@ -314,7 +325,7 @@ summary:focus-visible {
 .ticket__total-num {
   font-stretch: 70%;
   font-weight: 800;
-  font-size: clamp(3rem, 10vw, 4rem);
+  font-size: clamp(2.5rem, 8vw, 3.25rem);
   line-height: 1;
   letter-spacing: -.01em;
   color: var(--green-deep);
@@ -337,6 +348,19 @@ summary:focus-visible {
   font-size: .875rem;
   color: var(--amber);
 }
+
+/* Momento de apertura: el titular se "imprime" línea por línea, la regla verde corre y luego la boleta se marca. */
+.hero__linea { display: block; }
+@media (prefers-reduced-motion: no-preference) {
+  .hero__linea { animation: imprimir 700ms cubic-bezier(.16, 1, .3, 1) both; }
+  .hero__linea:nth-child(2) { animation-delay: 110ms; }
+  .rule { transform-origin: left center; animation: regla 700ms cubic-bezier(.16, 1, .3, 1) 300ms both; }
+}
+@keyframes imprimir {
+  from { clip-path: inset(0 0 100% 0); transform: translateY(14px); }
+  to { clip-path: inset(0 0 0 0); transform: none; }
+}
+@keyframes regla { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 /* Un solo momento animado: la boleta se va "marcando" fila por fila */
 @media (prefers-reduced-motion: no-preference) {
@@ -374,28 +398,19 @@ summary:focus-visible {
 /* ---------- Tarjetas (qué recibes) ---------- */
 .cards {
   display: grid;
-  gap: 18px;
-  margin: 40px 0 0;
+  gap: 28px 28px;
+  margin: 28px 0 0;
   padding: 0;
   list-style: none;
 }
+/* Sin "kit de tarjetas": cada entregable es un bloque abierto con una regla arriba, como las filas de la boleta. */
 .card {
-  position: relative;
-  padding: 28px 24px 26px;
-  border: 1.5px solid var(--rule);
-  border-top: 5px solid var(--green);
-  border-radius: 16px;
-  background: var(--white);
-  box-shadow: 0 10px 24px -14px rgba(15, 36, 79, .35);
+  padding: 22px 0 0;
+  border-top: 2px solid var(--ink);
 }
 .card__icon {
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 56px;
-  margin-bottom: 18px;
-  border-radius: 14px;
-  background: #E3F1E9;
+  display: block;
+  margin-bottom: 14px;
   color: var(--green-deep);
 }
 .card .h3 { color: var(--ink); }
@@ -404,7 +419,7 @@ summary:focus-visible {
 .steps {
   display: grid;
   gap: 32px;
-  margin: 40px 0 0;
+  margin: 28px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -431,17 +446,11 @@ summary:focus-visible {
 
 /* Franja de mensaje, como en el flyer */
 .band {
-  position: relative;
-  overflow: hidden;
-  margin-top: 40px;
-  padding: 28px 28px 28px 32px;
-  border-left: 8px solid var(--green);
-  border-radius: 4px 14px 14px 4px;
-  background: linear-gradient(100deg, var(--paper), #DDE6F2);
+  margin-top: 28px;
+  padding: 24px 0 0;
+  border-top: 2px solid var(--ink);
 }
 .band__text {
-  position: relative;
-  z-index: 1;
   margin: 0;
   max-width: 34ch;
   font-stretch: 85%;
@@ -451,20 +460,9 @@ summary:focus-visible {
   color: var(--ink);
   text-wrap: balance;
 }
-.band__text strong { color: var(--green-deep); font-weight: 800; }
-.band__deco {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 120px;
-  height: 100%;
-  background: var(--navy);
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
-  opacity: .9;
-}
 
 /* ---------- Comparativa con contabilidad ---------- */
-.cmp { margin-top: 40px; border-top: 2px solid var(--white); }
+.cmp { margin-top: 28px; border-top: 2px solid var(--white); }
 .cmp__head { display: none; }
 .cmp__row {
   display: grid;
@@ -508,13 +506,15 @@ summary:focus-visible {
   font-weight: 400;
   line-height: 1;
   color: var(--green-deep);
+  transition: transform 220ms var(--ease-out);
 }
-.faq__item[open] summary::after { content: "−"; }
+/* El "+" gira y queda como "×": muestra que la respuesta está abierta. */
+.faq__item[open] summary::after { transform: rotate(45deg); }
 .faq__item p { margin: 0 0 20px; max-width: 58ch; color: var(--muted); }
 
 /* ---------- Ejemplo de reporte ---------- */
 .report {
-  margin-top: 40px;
+  margin-top: 28px;
   overflow: hidden;
   border: 1.5px solid var(--rule);
   border-radius: 18px;
@@ -551,18 +551,17 @@ summary:focus-visible {
 }
 .report__grid > .rp:first-child { border-top: 0; }
 .rp__label {
-  margin: 0 0 14px;
-  font-size: .875rem;
+  margin: 0 0 12px;
+  font-stretch: 85%;
+  font-size: 1.125rem;
   font-weight: 700;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  color: var(--muted);
+  color: var(--ink);
 }
 .rp__big {
   margin: 0 0 6px;
   font-stretch: 70%;
   font-weight: 800;
-  font-size: clamp(3.5rem, 11vw, 5rem);
+  font-size: clamp(2.75rem, 8vw, 3.75rem);
   line-height: 1;
   color: var(--green-deep);
   font-variant-numeric: tabular-nums;
@@ -624,7 +623,7 @@ summary:focus-visible {
 
 /* ---------- Cierre: banda verde ---------- */
 .cta {
-  padding-block: clamp(44px, 7vw, 72px);
+  padding-block: clamp(32px, 5vw, 52px);
   background:
     radial-gradient(rgba(255, 255, 255, .22) 1.2px, transparent 1.5px) 0 0 / 22px 22px,
     linear-gradient(120deg, var(--green-deep) 0%, var(--green) 100%);
@@ -636,7 +635,7 @@ summary:focus-visible {
   max-width: 24ch;
   font-stretch: 80%;
   font-weight: 800;
-  font-size: clamp(1.875rem, 5vw, 2.75rem);
+  font-size: clamp(1.5rem, 3.6vw, 2.125rem);
   line-height: 1.08;
   text-wrap: balance;
 }
@@ -678,7 +677,7 @@ summary:focus-visible {
 .foot__bar {
   display: grid;
   gap: 8px;
-  margin-top: 40px;
+  margin-top: 28px;
   padding-top: 24px;
   border-top: 1px solid rgba(255, 255, 255, .14);
   text-align: center;
@@ -697,7 +696,9 @@ summary:focus-visible {
   background: linear-gradient(135deg, var(--green) 0%, var(--green-deep) 100%);
   box-shadow: 0 18px 30px rgba(35, 112, 74, 0.28);
   border: 1px solid rgba(255,255,255,.2);
+  transition: transform var(--t-press) var(--ease-out);
 }
+.mobile-cta:active { transform: scale(.98); }
 .mobile-cta a {
   display: block;
   text-align: center;
@@ -707,6 +708,77 @@ summary:focus-visible {
   font-weight: 800;
   font-size: .98rem;
   letter-spacing: -.01em;
+}
+
+/* ---------- Cabecera: enlace a planes + "Probar gratis" ---------- */
+.top__nav { display: flex; align-items: center; gap: 18px; }
+.top__link { color: var(--ink); font-weight: 600; text-decoration: none; }
+@media (hover: hover) and (pointer: fine) { .top__link:hover { text-decoration: underline; text-underline-offset: 4px; } }
+@media (max-width: 420px) { .top__link { display: none; } }
+.hero__nota { margin: 16px 0 0; font-size: .9375rem; color: #A9B8D3; }
+
+/* Variantes de botón para la sección de planes */
+.btn--ghost { background: var(--white); color: var(--navy); border: 1.5px solid var(--rule); }
+.btn--claro { background: transparent; color: var(--white); border: 1.5px solid rgba(255, 255, 255, .4); }
+@media (hover: hover) and (pointer: fine) {
+  .btn--ghost:hover { background: var(--paper); }
+  .btn--claro:hover { background: rgba(255, 255, 255, .1); }
+}
+
+/* ---------- Planes ---------- */
+.lead--ancho { max-width: 46ch; }
+.precios { display: grid; gap: 16px; margin-top: 8px; }
+@media (min-width: 680px) { .precios { grid-template-columns: repeat(2, 1fr); align-items: start; } }
+@media (min-width: 1100px) { .precios { grid-template-columns: repeat(4, 1fr); } }
+.precio {
+  display: flex; flex-direction: column; gap: 8px; height: 100%; padding: 20px 18px;
+  border: 1.5px solid var(--rule); border-radius: 18px; background: var(--white);
+}
+.precio__nombre { margin: 0; font-stretch: 75%; font-weight: 800; font-size: 1.5rem; line-height: 1; }
+.precio__monto { margin: 0; font-stretch: 70%; font-weight: 800; font-size: 2.625rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.precio__monto--texto { font-size: 2.125rem; }
+.precio__mon { margin-right: 4px; font-size: .5em; }
+.precio__per { font-stretch: 100%; font-size: .3em; font-weight: 600; color: var(--muted); }
+.precio__para { margin: 0; color: var(--muted); }
+.precio__lista { display: grid; gap: 7px; margin: 4px 0 2px; font-size: .9375rem; padding: 0; list-style: none; flex: 1; }
+.precio__lista li { position: relative; padding-left: 26px; line-height: 1.35; }
+.precio__lista li::before {
+  content: ""; position: absolute; left: 0; top: .2em; width: 16px; height: 9px;
+  border-left: 2.5px solid var(--green-deep); border-bottom: 2.5px solid var(--green-deep); transform: rotate(-45deg) scale(.8);
+}
+.precio__cta { justify-content: center; width: 100%; margin-top: 8px; }
+/* Pro: el plan que queremos que elijan. Oscuro, con halo verde y un poco más alto. */
+.precio--destacado {
+  background: var(--ink); border-color: var(--ink); color: var(--white);
+  box-shadow: 0 0 0 4px rgba(46, 139, 87, .35), 0 28px 44px -24px rgba(15, 36, 79, .75);
+}
+@media (min-width: 1100px) { .precio--destacado { margin-top: -10px; padding-top: 30px; } }
+.precio--destacado .precio__para, .precio--destacado .precio__per { color: var(--on-ink); }
+.precio--destacado .precio__lista li::before { border-color: var(--green-soft); }
+.precio--destacado .btn { background: var(--green); }
+.precio__marca { margin: 0; font-size: .875rem; font-weight: 700; color: var(--green-soft); }
+.precio--servicio { background: #0E3B2A; border-color: #0E3B2A; color: var(--white); }
+.precio--servicio .precio__para { color: #BFD9CB; }
+.precio--servicio .precio__lista li::before { border-color: var(--green-soft); }
+.precios__pago { margin: 22px 0 0; max-width: 70ch; color: var(--muted); font-size: .9375rem; }
+
+/* ---------- Política de privacidad ---------- */
+.legal { padding-block: clamp(40px, 7vw, 80px); }
+.legal__in { max-width: 68ch; }
+.legal h1 { margin: 0 0 .3em; font-stretch: 72%; font-weight: 800; font-size: clamp(2.5rem, 9vw, 4rem); line-height: .95; letter-spacing: -.015em; text-wrap: balance; }
+.legal h2 { margin: 2.2em 0 .5em; font-stretch: 85%; font-size: 1.5rem; line-height: 1.15; }
+.legal p, .legal li { color: #24365C; }
+.legal ul { padding-left: 1.2em; }
+.legal li + li { margin-top: .4em; }
+.legal__fecha { color: var(--muted); }
+.legal__resumen { margin: 1.5em 0 0; padding: 18px 20px; border-left: 4px solid var(--green); background: var(--paper); }
+.legal__resumen p { margin: 0; color: var(--ink); }
+.legal a { color: var(--navy); font-weight: 600; text-underline-offset: 3px; }
+.foot__legal a { color: var(--white); text-underline-offset: 3px; }
+
+/* Con "reducir movimiento", nada se mueve (ni presión de botones ni giros). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
 }
 
 /* ---------- Escritorio ---------- */
@@ -760,3 +832,250 @@ summary:focus-visible {
   .cmp__a::before,
   .cmp__b::before { display: none; }
 }
+
+/* Pro: etiqueta "Compra ya" montada sobre el borde superior, con un brillo que pasa una vez al cargar. */
+.precio--destacado { position: relative; }
+.precio__cinta {
+  position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+  margin: 0; padding: 6px 14px; border-radius: 999px; white-space: nowrap; overflow: hidden;
+  background: var(--green); color: var(--white); font-size: .8125rem; font-weight: 800; letter-spacing: .01em;
+  box-shadow: 0 8px 18px -8px rgba(35, 112, 74, .8);
+}
+.precio__cinta::after {
+  content: ""; position: absolute; inset: 0; transform: translateX(-120%);
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, .45) 50%, transparent 70%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .precio__cinta::after { animation: brillo 1.4s cubic-bezier(.16, 1, .3, 1) 1.2s both; }
+}
+@keyframes brillo { to { transform: translateX(120%); } }
+.precio--destacado { padding-top: 30px; }
+/* Privacidad siempre a la vista: en la cabecera (escritorio) y en la barra fija del celular. */
+.top__link--privacidad { font-size: .9375rem; color: var(--muted); }
+.mobile-cta a.mobile-cta__legal {
+  padding: 0 12px 10px; margin-top: -8px; font-size: .75rem; font-weight: 600; color: rgba(255, 255, 255, .85);
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.legal__indice { margin: 18px 0 0; font-size: .9375rem; color: var(--muted); }
+
+/* ================= Planes v2: cada plan es una boleta (la pieza de la marca) =================
+   - Borde dentado abajo (máscara: funciona sobre cualquier color de fondo).
+   - Al entrar en pantalla se "imprimen" una tras otra; el precio del Pro cuenta hasta S/ 12.90.
+   - Con mouse: leve inclinación hacia el cursor y un brillo que lo sigue. */
+
+/* Secciones más juntas (pedido de Alvaro): menos aire entre banners. */
+.section { padding-block: clamp(32px, 5vw, 60px); }
+.hero { padding-block: clamp(28px, 5vw, 56px); }
+.h2 { margin-bottom: .4em; }
+.lead { margin-bottom: 1.25rem; }
+
+#planes { background: var(--paper); }
+.precios {
+  gap: 18px; margin-top: 18px;
+  filter: drop-shadow(0 18px 22px rgba(15, 36, 79, .13));
+}
+@media (min-width: 1100px) { .precios { gap: 20px; } }
+
+.precio {
+  --dientes: 9px;
+  position: relative; gap: 10px;
+  padding: 26px 24px calc(28px + var(--dientes));
+  border: 0; border-radius: 18px 18px 0 0;
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--dientes)) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(var(--dientes) * 2) var(--dientes) repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--dientes)) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(var(--dientes) * 2) var(--dientes) repeat-x;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 320ms cubic-bezier(.23, 1, .32, 1);
+}
+/* Brillo que sigue al cursor. */
+.precio::before {
+  content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none;
+  background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 0%), rgba(46, 139, 87, .10), transparent 60%);
+  opacity: 0; transition: opacity 300ms ease;
+}
+.precio--destacado::before, .precio--servicio::before {
+  background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, .14), transparent 60%);
+}
+@media (hover: hover) and (pointer: fine) { .precio:hover::before { opacity: 1; } }
+
+/* Más grandes y legibles. */
+.precio__nombre { font-size: 1.625rem; }
+.precio__monto { font-size: 3.25rem; }
+.precio__monto--texto { font-size: 2.5rem; }
+.precio__lista { gap: 9px; font-size: 1rem; }
+/* Línea punteada de boleta entre el precio y lo que incluye. */
+.precio__para { padding-bottom: 14px; border-bottom: 2px dashed rgba(15, 36, 79, .18); }
+.precio--destacado .precio__para, .precio--servicio .precio__para { border-bottom-color: rgba(255, 255, 255, .22); }
+
+/* Pro: la etiqueta va dentro de la boleta (la máscara recortaría lo que sobresale). */
+.precio--destacado { box-shadow: none; padding-top: 58px; }
+@media (min-width: 1100px) { .precio--destacado { margin-top: -14px; padding-top: 62px; } }
+.precio__cinta { top: 18px; left: 24px; transform: none; }
+
+/* Impresión de las boletas al llegar a la sección. */
+.precios--esperando .precio { clip-path: inset(0 0 100% 0); }
+.precios--imprimir .precio { animation: imprimir-boleta 820ms cubic-bezier(.16, 1, .3, 1) backwards; }
+.precios--imprimir .precio:nth-child(2) { animation-delay: 130ms; }
+.precios--imprimir .precio:nth-child(3) { animation-delay: 260ms; }
+.precios--imprimir .precio:nth-child(4) { animation-delay: 390ms; }
+@keyframes imprimir-boleta {
+  from { clip-path: inset(0 0 100% 0); transform: translateY(-16px); }
+  to { clip-path: inset(0 0 0 0); transform: none; }
+}
+
+/* Calculadora: qué parte de tus ventas cuesta el Pro. */
+.calc {
+  display: grid; gap: 10px; max-width: 640px; margin: 4px 0 8px; padding: 18px 20px;
+  border-radius: 16px; background: var(--white); border: 1.5px solid var(--rule);
+}
+.calc__label { font-weight: 700; }
+.calc__fila { display: flex; align-items: center; gap: 16px; }
+.calc__rango {
+  --avance: 12%;
+  flex: 1; height: 8px; border-radius: 4px; appearance: none; -webkit-appearance: none; cursor: pointer;
+  background: linear-gradient(90deg, var(--navy), var(--green)) 0 / var(--avance) 100% no-repeat, var(--paper);
+}
+.calc__rango::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; background: var(--white);
+  border: 3px solid var(--green-deep); box-shadow: 0 4px 10px -2px rgba(15, 36, 79, .35);
+  transition: transform 160ms cubic-bezier(.23, 1, .32, 1);
+}
+.calc__rango:active::-webkit-slider-thumb { transform: scale(1.15); }
+.calc__rango::-moz-range-thumb {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--white); border: 3px solid var(--green-deep);
+}
+.calc__rango:focus-visible { outline: 3px solid var(--green); outline-offset: 6px; }
+.calc__valor { min-width: 7.5ch; text-align: right; font-family: var(--mono); font-weight: 500; font-size: 1.125rem; }
+.calc__res { margin: 0; color: var(--muted); }
+.calc__res strong { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .precio { transform: none; transition: none; }
+  .precios--esperando .precio { clip-path: none; }
+}
+
+
+/* ================= Planes v3: más grandes, con vida continua y el logo presente =================
+   Movimiento continuo (todo se apaga con "reducir movimiento"):
+   - Las boletas flotan suave y desfasadas (propiedad `translate`, no choca con la inclinación del mouse).
+   - El logo gira como una moneda cada pocos segundos (el logo ES una moneda).
+   - La etiqueta "Compra ya" brilla en bucle; el fondo de la sección se desliza lento.
+   - La boleta del inicio se reimprime con otro mes de ejemplo cada 7 s (script.js). */
+
+/* Logo más presente en la cabecera */
+.top__in { min-height: 72px; }
+.brand__name { font-size: 1.875rem; }
+.brand__mark { width: 48px; height: 48px; }
+
+/* Sección de planes: más ancha y con fondo vivo */
+#planes { position: relative; overflow: hidden; }
+.planes__fondo {
+  position: absolute; top: -88px; right: -88px; bottom: -88px; left: -88px; pointer-events: none;
+  background:
+    radial-gradient(rgba(15, 36, 79, .10) 1.3px, transparent 1.6px) 0 0 / 22px 22px,
+    repeating-linear-gradient(115deg, transparent 0 42px, rgba(46, 139, 87, .06) 42px 43px);
+  -webkit-mask-image: radial-gradient(120% 90% at 70% 30%, #000 30%, transparent 85%);
+  mask-image: radial-gradient(120% 90% at 70% 30%, #000 30%, transparent 85%);
+}
+.wrap--planes { position: relative; max-width: 1320px; }
+
+.planes__cabecera { display: grid; gap: 28px; align-items: center; margin-bottom: 36px; }
+@media (min-width: 1000px) { .planes__cabecera { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 48px; } }
+.planes__intro .h2 { max-width: 14ch; }
+.planes__sello { display: block; margin-bottom: 14px; filter: drop-shadow(0 8px 14px rgba(15, 36, 79, .25)); }
+.pagos { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.pagos__chip {
+  padding: 8px 14px; border-radius: 999px; background: var(--white); border: 1.5px solid var(--rule);
+  font-weight: 700; font-size: .9375rem; color: var(--ink);
+}
+.pagos__chip--yape { background: #6C1C80; border-color: #6C1C80; color: #fff; }
+.pagos__chip--plin { background: #00A99D; border-color: #00A99D; color: #fff; }
+
+/* Calculadora grande */
+.calc {
+  max-width: none; margin: 0; padding: 26px 28px; gap: 14px; border-radius: 22px;
+  background: var(--white); border: 1.5px solid var(--rule);
+  box-shadow: 0 24px 40px -28px rgba(15, 36, 79, .45);
+}
+.calc__top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+.calc__label { font-size: 1.125rem; }
+.calc__valor { min-width: 0; font-size: 1.75rem; color: var(--ink); }
+.calc__rango { height: 10px; }
+.calc__res { display: grid; gap: 4px; }
+.calc__grande { margin: 0; font-stretch: 70%; font-weight: 800; font-size: clamp(2.5rem, 6vw, 3.5rem); line-height: 1; color: var(--green-deep); }
+.calc__grande small { margin-left: 8px; font-stretch: 100%; font-size: 1rem; font-weight: 600; color: var(--muted); }
+.calc__texto { margin: 0; color: var(--muted); }
+.calc__texto strong { color: var(--ink); }
+.calc__barra {
+  position: relative; display: flex; align-items: center; height: 38px; margin-top: 24px; padding-left: 14px;
+  border-radius: 10px; background: linear-gradient(90deg, var(--ink), #2B4F8C); color: var(--white);
+  font-size: .875rem; font-weight: 700;
+}
+/* La rebanada del Pro: diminuta frente a las ventas, y late para que se note. */
+.calc__barra::after {
+  content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: var(--pro, .6%); min-width: 6px;
+  border-radius: 0 10px 10px 0; background: var(--green);
+  box-shadow: 0 0 0 0 rgba(46, 139, 87, .6);
+}
+.calc__pro { position: absolute; right: 0; bottom: calc(100% + 6px); display: flex; align-items: center; gap: 6px; color: var(--green-deep); font-size: .8125rem; }
+.calc__pro i { display: block; width: 10px; height: 10px; border-radius: 3px; background: var(--green); }
+
+/* Boletas más grandes */
+.precio { padding: 32px 28px calc(34px + var(--dientes)); gap: 12px; }
+.precio__nombre { font-size: 1.875rem; }
+.precio__monto { font-size: 3.75rem; }
+.precio__monto--texto { font-size: 2.75rem; }
+.precio__para { font-size: 1.0625rem; }
+.precio__lista { gap: 11px; font-size: 1.0625rem; }
+.precio__cta { min-height: 54px; font-size: 1.0625rem; }
+.precio__logo { position: absolute; top: 22px; right: 22px; opacity: .9; }
+.precio--destacado { padding-top: 70px; }
+@media (min-width: 1100px) { .precio--destacado { padding-top: 74px; } }
+.precio__cinta { top: 24px; left: 28px; font-size: .875rem; padding: 6px 14px; }
+
+/* ---------- Movimiento continuo ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .planes__fondo { animation: deriva 14s linear infinite; }
+  .brand__mark, .planes__sello { animation: moneda 9s cubic-bezier(.45, 0, .2, 1) infinite; transform-style: preserve-3d; }
+  .planes__sello { animation-delay: 2.5s; }
+  .precio__logo { animation: moneda 9s cubic-bezier(.45, 0, .2, 1) infinite; }
+  .precio:nth-child(2) .precio__logo { animation-delay: 1.2s; }
+  .precio:nth-child(3) .precio__logo { animation-delay: 2.4s; }
+  .precio:nth-child(4) .precio__logo { animation-delay: 3.6s; }
+
+  /* Flotar: siempre, desfasadas. Se suma a la impresión inicial. */
+  .precio { animation: flotar 6s ease-in-out infinite; }
+  .precio:nth-child(2) { animation-delay: -1.5s; }
+  .precio:nth-child(3) { animation-delay: -3s; }
+  .precio:nth-child(4) { animation-delay: -4.5s; }
+  .precios--imprimir .precio { animation: imprimir-boleta 820ms cubic-bezier(.16, 1, .3, 1) backwards, flotar 6s ease-in-out 820ms infinite; }
+  .precios--imprimir .precio:nth-child(2) { animation-delay: 130ms, -.5s; }
+  .precios--imprimir .precio:nth-child(3) { animation-delay: 260ms, -2s; }
+  .precios--imprimir .precio:nth-child(4) { animation-delay: 390ms, -3.5s; }
+
+  .precio__cinta::after { animation: brillo-bucle 3.8s cubic-bezier(.16, 1, .3, 1) 1s infinite; }
+  .calc__barra::after { animation: latido 2.2s ease-out infinite; }
+
+  /* La boleta del inicio se vuelve a imprimir con otro mes. */
+  .ticket--reimprime .ticket__row,
+  .ticket--reimprime .ticket__total,
+  .ticket--reimprime .ticket__leak { animation: tape-otra .45s cubic-bezier(.2, .7, .2, 1) both; }
+  .ticket--reimprime .ticket__row:nth-child(1) { animation-delay: 0s; }
+  .ticket--reimprime .ticket__row:nth-child(2) { animation-delay: .15s; }
+  .ticket--reimprime .ticket__row:nth-child(3) { animation-delay: .3s; }
+  .ticket--reimprime .ticket__total { animation-delay: .5s; }
+  .ticket--reimprime .ticket__leak { animation-delay: .8s; }
+}
+@keyframes flotar { 0%, 100% { translate: 0 0; } 50% { translate: 0 -9px; } }
+@keyframes deriva { from { transform: translate(0, 0); } to { transform: translate(44px, 44px); } }
+@keyframes moneda { 0%, 82% { transform: rotateY(0); } 100% { transform: rotateY(360deg); } }
+@keyframes brillo-bucle { 0% { transform: translateX(-120%); } 40%, 100% { transform: translateX(120%); } }
+@keyframes latido { 0% { box-shadow: 0 0 0 0 rgba(46, 139, 87, .6); } 100% { box-shadow: 0 0 0 12px rgba(46, 139, 87, 0); } }
+@keyframes tape-otra { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+/* Entrar: para quien ya creo su negocio (la app abre en Inicio; si no hay negocio, en el registro). */
+.top__link--entrar { padding: 8px 14px; border: 1.5px solid var(--rule); border-radius: 10px; }
+@media (max-width: 420px) { .top__link--entrar { display: inline-block; padding: 8px 10px; } }
