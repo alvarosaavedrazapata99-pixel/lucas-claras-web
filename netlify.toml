@@ -1,0 +1,14 @@
+# Netlify: publica esta carpeta tal cual y activa las funciones de pago (/api/...).
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# El código de las funciones no tiene secretos (van en variables de entorno), pero no hace falta servirlo.
+[[redirects]]
+  from = "/netlify/*"
+  to = "/404"
+  status = 404
+  force = true

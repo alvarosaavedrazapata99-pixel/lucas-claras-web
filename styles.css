@@ -1079,3 +1079,38 @@ summary:focus-visible {
 /* Entrar: para quien ya creo su negocio (la app abre en Inicio; si no hay negocio, en el registro). */
 .top__link--entrar { padding: 8px 14px; border: 1.5px solid var(--rule); border-radius: 10px; }
 @media (max-width: 420px) { .top__link--entrar { display: inline-block; padding: 8px 10px; } }
+
+
+/* ================= Sección "Personas": la misma app para tus finanzas ================= */
+.personas {
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(700px 380px at 15% 80%, rgba(46, 139, 87, .25), transparent 60%),
+    linear-gradient(160deg, var(--ink) 0%, #13306A 100%);
+}
+.personas::before {
+  content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none;
+  background: radial-gradient(rgba(255, 255, 255, .12) 1.2px, transparent 1.5px) 0 0 / 22px 22px;
+  -webkit-mask-image: linear-gradient(270deg, transparent 30%, #000 100%); mask-image: linear-gradient(270deg, transparent 30%, #000 100%);
+}
+.personas__in { position: relative; display: grid; gap: 36px; align-items: center; }
+@media (min-width: 900px) { .personas__in { grid-template-columns: 1.1fr .9fr; gap: 64px; } }
+.personas__lead { margin: 0 0 16px; max-width: 46ch; color: var(--on-ink); font-size: 1.125rem; }
+.personas__puntos { display: grid; gap: 8px; margin: 0 0 22px; padding: 0; list-style: none; color: var(--white); }
+.personas__puntos li { position: relative; padding-left: 26px; }
+.personas__puntos li::before {
+  content: ""; position: absolute; left: 0; top: .3em; width: 14px; height: 8px;
+  border-left: 2.5px solid var(--green-soft); border-bottom: 2.5px solid var(--green-soft); transform: rotate(-45deg);
+}
+.personas__nota { margin: 14px 0 0; font-size: .9375rem; color: #A9B8D3; }
+.ticket--persona { margin: 0 auto; }
+@media (min-width: 900px) { .ticket--persona { margin-inline: auto 0; } }
+
+/* Animación permanente también aquí: el logo de cada pantalla gira como moneda (ya activo en .brand__mark),
+   la boleta de personas flota y el fondo de puntos se desliza. */
+@media (prefers-reduced-motion: no-preference) {
+  .ticket--persona { animation: flotar 6s ease-in-out infinite; }
+  .personas::before { animation: deriva-puntos 24s linear infinite; }
+  .foot__brand img { animation: moneda 9s cubic-bezier(.45, 0, .2, 1) 4s infinite; }
+}
+@keyframes deriva-puntos { from { background-position: 0 0; } to { background-position: 44px 44px; } }

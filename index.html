@@ -252,6 +252,42 @@
       </div>
     </section>
 
+    <!-- PERSONAS: la misma app, para tus finanzas -->
+    <section class="section section--ink personas" id="personas">
+      <div class="wrap personas__in">
+        <div class="personas__texto">
+          <h2 class="h2 h2--onink">¿No tienes negocio? También es para ti.</h2>
+          <p class="personas__lead">Anota tu sueldo y tus gastos como en WhatsApp ("me pagaron 1,500", "gasté 12 en almuerzo") y mira cada mes cuánto te queda, en qué se te va y cuánto puedes ahorrar.</p>
+          <ul class="personas__puntos">
+            <li>Tus 3 gastos más grandes, en soles</li>
+            <li>Tu meta de ahorro del mes, o el 10 % sugerido</li>
+            <li>Una decisión simple para el mes que viene</li>
+          </ul>
+          <a class="btn" href="app/#/registro?tipo=persona">Empezar con mis finanzas</a>
+          <p class="personas__nota">Mismos planes: Básico gratis, Pro S/ 12.90 y Premium S/ 22.90.</p>
+        </div>
+        <figure class="ticket ticket--persona" aria-label="Ejemplo de mes de una persona con datos ficticios">
+          <div class="ticket__head">
+            <span class="ticket__title">Mi mes</span>
+            <span class="ticket__tag">Ejemplo con datos ficticios</span>
+          </div>
+          <dl class="ticket__rows">
+            <div class="ticket__row"><dt>Sueldo</dt><dd>1,500.00</dd></div>
+            <div class="ticket__row ticket__row--less"><dt>Alimentación y pasajes</dt><dd>820.00</dd></div>
+            <div class="ticket__row ticket__row--less"><dt>Cuarto y servicios</dt><dd>500.00</dd></div>
+          </dl>
+          <div class="ticket__total">
+            <span class="ticket__total-label">Te queda</span>
+            <span class="ticket__total-num"><span class="ticket__cur">S/</span> 180.00</span>
+          </div>
+          <div class="ticket__leak">
+            <span>Ahorro del mes</span>
+            <span class="ticket__leak-val">12 % de tu sueldo · meta sugerida S/ 150</span>
+          </div>
+        </figure>
+      </div>
+    </section>
+
     <!-- PLANES (misma información que LucasClaras/src/core/planes.ts: mantenerlos iguales) -->
     <section class="section section--white" id="planes">
       <div class="planes__fondo" aria-hidden="true"></div>
@@ -264,6 +300,7 @@
             <ul class="pagos" aria-label="Formas de pago">
               <li class="pagos__chip pagos__chip--yape">Yape</li>
               <li class="pagos__chip pagos__chip--plin">Plin</li>
+              <li class="pagos__chip">BCP</li>
               <li class="pagos__chip">Transferencia</li>
               <li class="pagos__chip">Efectivo</li>
             </ul>
@@ -316,7 +353,7 @@
               <li>Informe Pro en PDF y resumen para WhatsApp</li>
               <li>Soporte por WhatsApp</li>
             </ul>
-            <a class="btn precio__cta" href="https://wa.me/51963443282?text=Hola%20Alvaro%2C%20quiero%20activar%20el%20plan%20Pro%20(S%2F%2012.90%20al%20mes)%20de%20Lucas%20Claras.%20%C2%BFC%C3%B3mo%20te%20pago%3F" target="_blank" rel="noopener">Comprar Pro ya</a>
+            <a class="btn precio__cta" href="app/#/planes#medio">Comprar Pro ya</a>
           </article>
 
           <article class="precio">
@@ -331,7 +368,7 @@
               <li>Hasta 5 negocios</li>
               <li>Soporte prioritario por WhatsApp</li>
             </ul>
-            <a class="btn btn--ghost precio__cta" href="https://wa.me/51963443282?text=Hola%20Alvaro%2C%20quiero%20activar%20el%20plan%20Premium%20(S%2F%2022.90%20al%20mes)%20de%20Lucas%20Claras.%20%C2%BFC%C3%B3mo%20te%20pago%3F" target="_blank" rel="noopener">Quiero el Premium</a>
+            <a class="btn btn--ghost precio__cta" href="app/#/planes#avanzado">Quiero el Premium</a>
           </article>
 
           <article class="precio precio--servicio">
@@ -348,7 +385,7 @@
             <a class="btn btn--claro precio__cta" href="https://wa.me/51963443282?text=Hola%20Alvaro%2C%20quiero%20el%20diagn%C3%B3stico%20con%20reuni%C3%B3n%20de%20Lucas%20Claras.%20%C2%BFMe%20cotizas%3F" target="_blank" rel="noopener">Cotizar por WhatsApp</a>
           </article>
         </div>
-        <p class="precios__pago">Formas de pago: Yape y Plin al 963 443 282, transferencia o efectivo en Lima. Al pagar te mando tu código por WhatsApp y el plan se activa al instante.</p>
+        <p class="precios__pago">Paga con Yape o Plin al 963 443 282, o por transferencia BCP, y te mando tu código por WhatsApp para activar tu plan al instante. Muy pronto también con tarjeta.</p>
       </div>
     </section>
 
@@ -419,6 +456,7 @@
             <li><a href="#contador">¿Y mi contador?</a></li>
             <li><a href="#ejemplo">Ejemplo de diagnóstico</a></li>
             <li><a href="#planes">Planes y precios</a></li>
+            <li><a href="#personas">Para personas</a></li>
             <li><a href="app/">Abrir la app</a></li>
             <li><a href="#preguntas">Preguntas frecuentes</a></li>
           </ul>

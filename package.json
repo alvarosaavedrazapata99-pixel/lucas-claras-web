@@ -1,0 +1,9 @@
+{
+  "name": "lucas-claras-sitio",
+  "private": true,
+  "type": "module",
+  "description": "Sitio publicado de Lucas Claras (landing + app en /app) y funciones de pago con Mercado Pago (Netlify).",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}
